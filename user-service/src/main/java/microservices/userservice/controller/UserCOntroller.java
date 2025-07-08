@@ -1,14 +1,20 @@
 package microservices.userservice.controller;
 
 import microservices.userservice.entity.UserEntity;
+import microservices.userservice.exception.UserAlreadyExistsException;
+import microservices.userservice.exception.UserNotFoundException;
 import microservices.userservice.mapper.UserMapper;
 import microservices.userservice.repository.UserRepository;
+import microservices.userservice.service.UserService;
 import model.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -17,47 +23,56 @@ import java.util.stream.Collectors;
 public class UserCOntroller {
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private UserService userService;
 
     @GetMapping
     public List<UserDTO> getAllUsers() {
-        return userRepository.findAll()
-                .stream()
-                .map(UserMapper::toDto)
-                .collect(Collectors.toList());
+        return userService.getAllUsers();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
-        return userRepository.findById(id)
-                .map(UserMapper::toDto)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<?> getUserById(@PathVariable Long id) {
+
+        try {
+            UserDTO userDTO = userService.getUserById(id);
+            return ResponseEntity.ok(userDTO);
+        } catch (UserNotFoundException ex) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "User not found with id " + id);
+            error.put("message: ", String.valueOf(id));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+        }
     }
 
     @PostMapping
-    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO) {
-        UserEntity userEntity = UserMapper.toEntity(userDTO);
-        userEntity.setPassword(String.valueOf(userDTO.getPassword().hashCode()));
-        UserEntity saved = userRepository.save(userEntity);
+    public ResponseEntity<?> createUser(@RequestBody UserDTO userDTO) {
 
-//        saved.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-        return ResponseEntity.ok(UserMapper.toDto(saved));
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<UserDTO> updateUser(@PathVariable Long id, @RequestBody UserDTO userDTO) {
-        Optional<UserEntity> optionalUser = userRepository.findById(id);
-        if (optionalUser.isEmpty()) {
-            return ResponseEntity.notFound().build();
+        try {
+            UserDTO createdUser = userService.createUser(userDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+        } catch (UserAlreadyExistsException ex) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "User already exists with mail " + userDTO.getEmail());
+            error.put("message: ", String.valueOf(userDTO.getEmail()));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
         }
-
-        UserEntity user = optionalUser.get();
-        user.setName(userDTO.getName());
-        user.setEmail(userDTO.getEmail());
-
-        UserEntity updated = userRepository.save(user);
-        return ResponseEntity.ok(UserMapper.toDto(updated));
     }
+
+//    @PutMapping("/{id}")
+//    public ResponseEntity<UserDTO> updateUser(@PathVariable Long id, @RequestBody UserDTO userDTO) {
+//        Optional<UserEntity> optionalUser = userRepository.findById(id);
+//        if (optionalUser.isEmpty()) {
+//            return ResponseEntity.notFound().build();
+//        }
+//
+//        UserEntity user = optionalUser.get();
+//        user.setName(userDTO.getName());
+//        user.setEmail(userDTO.getEmail());
+//
+//        UserEntity updated = userRepository.save(user);
+//        return ResponseEntity.ok(UserMapper.toDto(updated));
+//    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
