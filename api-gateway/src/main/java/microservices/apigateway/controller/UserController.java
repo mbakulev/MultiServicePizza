@@ -5,8 +5,12 @@ import microservices.apigateway.client.UserClient;
 import microservices.apigateway.exceptions.*;
 import model.KitchenDTO;
 import model.UserDTO;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/user")
@@ -18,24 +22,31 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<UserDTO> getUser(@PathVariable Long userId) {
+    public ResponseEntity<?> getUser(@PathVariable Long userId) {
         try {
             var user = userClient.getUserById(userId);
+            System.out.println(user);
             return ResponseEntity.ok(user);
         } catch (FeignException.NotFound ex) {
-            return ResponseEntity.notFound().build();
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "User Not Found");
+            error.put("message: ", String.valueOf(userId));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
         } catch (FeignException ex) {
             throw new RuntimeException("Error calling USER service getUser: " + ex.getMessage());
         }
     }
 
     @PostMapping
-    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<?> createUser(@RequestBody UserDTO userDTO) {
         try {
             var user = userClient.createUser(userDTO);
             return ResponseEntity.ok(user);
-        } catch (FeignException.NotFound ex) {
-            throw new UserAlreadyExistsException("User already exists with name: " + userDTO.getName());
+        } catch (FeignException.Conflict ex) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "User alreaDY EXISTS EMAIL: " + userDTO.getEmail());
+            error.put("message: ", userDTO.getEmail());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
         } catch (FeignException ex) {
             throw new RuntimeException("Error calling USER service createUser: " + ex.getMessage());
         }
