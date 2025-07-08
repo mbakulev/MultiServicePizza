@@ -1,0 +1,5 @@
+rootProject.name = 'MultiService'
+include 'order-service'
+include 'product-service'
+include 'common-model'
+
