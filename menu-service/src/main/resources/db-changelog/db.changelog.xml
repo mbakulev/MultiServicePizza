@@ -1,0 +1,19 @@
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+
+    <changeSet id="init_menu_table" author="MBakulev">
+        <sqlFile encoding="utf8" path="/db-changelog/changelog-03.sql"/>
+        <rollback/>
+    </changeSet>
+
+    <changeSet id="insert_data_into_menu_table" author="MBakulev">
+        <sqlFile encoding="utf8" path="/db-changelog/changelog-04.sql"/>
+        <rollback/>
+    </changeSet>
+
+
+</databaseChangeLog>
