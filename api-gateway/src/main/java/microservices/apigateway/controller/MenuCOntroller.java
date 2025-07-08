@@ -8,11 +8,15 @@ import microservices.apigateway.exceptions.MenuNotFoundException;
 import model.DishDTO;
 import model.KitchenDTO;
 import model.MenuDTO;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/menu")
@@ -23,12 +27,16 @@ public class MenuCOntroller {
         this.menuClient = menuClient;
     }
     @GetMapping("/dish/{dishId}")
-    public ResponseEntity<DishDTO> getDish(@PathVariable Long dishId) {
+    public ResponseEntity<?> getDish(@PathVariable Long dishId) {
         try {
             var dish = menuClient.getDish(dishId);
             return ResponseEntity.ok(dish);
         } catch (FeignException.NotFound ex) {
-            throw new DishNotFoundException("Dish not found: " + dishId);
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Dish Not Found");
+            error.put("message: ", String.valueOf(dishId));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+//            throw new DishNotFoundException("Dish not found: " + dishId);
         } catch (FeignException ex) {
             throw new RuntimeException("Error calling MENU service getDish: " + ex.getMessage());
         }
