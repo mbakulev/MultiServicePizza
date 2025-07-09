@@ -9,15 +9,15 @@ import org.springframework.web.bind.annotation.*;
         url = "${user.service.url}"
 )
 public interface UserClient {
-    @GetMapping("/{id}")
+    @GetMapping("/api/user/{id}")
     UserDTO getUserById(@PathVariable Long id);
 
-    @PostMapping
+    @PostMapping("/api/user")
     UserDTO createUser(@RequestBody UserDTO userDTO);
 
-    @PutMapping("/{id}")
+    @PutMapping("/api/user/{id}")
     UserDTO updateUser(@PathVariable Long id, @RequestBody UserDTO userDTO);
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/api/user/{id}")
     void deleteUser(@PathVariable Long id);
 }
