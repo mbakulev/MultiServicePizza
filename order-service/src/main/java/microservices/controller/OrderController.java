@@ -5,6 +5,7 @@ package microservices.controller;
 //import feign.FeignException;
 //import model.Order;
 //import org.springframework.http.ResponseEntity;
+import microservices.exception.OrderNotFoundException;
 import microservices.service.OrderService;
 import model.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -24,8 +26,21 @@ public class OrderController {
     private OrderService orderService;
 
     @GetMapping("/{id}")
-    public OrderDTO getOrder(@PathVariable Long id) {
-        return orderService.getOrderById(id);
+    public ResponseEntity<?> getOrder(@PathVariable Long id) {
+        try {
+            OrderDTO orderDTO = orderService.getOrderById(id);
+            return ResponseEntity.ok().body(orderDTO);
+        } catch (OrderNotFoundException e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Не найден заказ " + id);
+            error.put("message: ", String.valueOf(id));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+        }
+    }
+
+    @GetMapping()
+    public List<OrderDTO> getOrders() {
+        return orderService.findAll();
     }
 
     @PostMapping
