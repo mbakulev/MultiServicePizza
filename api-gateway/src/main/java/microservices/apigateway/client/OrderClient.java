@@ -11,7 +11,7 @@ import java.util.List;
         url = "${order.service.url}"
 )
 public interface OrderClient {
-    @GetMapping
+    @GetMapping("/api/order")
     List<OrderDTO> getAllOrders();
 
     @GetMapping("/api/order/{id}")

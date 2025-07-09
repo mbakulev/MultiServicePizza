@@ -7,6 +7,9 @@ import microservices.entity.OrderStatusEntity;
 import model.OrderDTO;
 import model.OrderItemDTO;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class OrderMapper {
 //    public static OrderDTO toDTO(OrderEntity entity) {
 //        OrderDTO dto = new OrderDTO();
@@ -55,14 +58,14 @@ public static OrderDTO toDTO(OrderEntity orderEntity) {
     OrderDTO orderDTO = new OrderDTO();
     orderDTO.setId(orderEntity.getId());
     orderDTO.setCustomerId(orderEntity.getCustomerId());
-//    // orderDTO.setStatusId(orderEntity.getStatus().getId());
+    orderDTO.setStatusId(orderEntity.getStatus().getId());
     orderDTO.setCreatedAt(orderEntity.getCreatedAt());
     orderDTO.setTotalOrderAmount(orderEntity.getTotalOrderAmount());
 
-//    List<OrderItemDTO> orderItemDTOs = orderEntity.getItems().stream()
-//            .map(OrderMapper::toDTO)
-//            .collect(Collectors.toList());
-//    orderDTO.setItems(orderItemDTOs);
+    List<OrderItemDTO> orderItemDTOs = orderEntity.getItems().stream()
+            .map(OrderMapper::toDTO)
+            .collect(Collectors.toList());
+    orderDTO.setItems(orderItemDTOs);
 
     return orderDTO;
 }
