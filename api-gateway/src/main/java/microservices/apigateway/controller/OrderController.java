@@ -37,14 +37,18 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<OrderDTO> getOrderById(@PathVariable Long id) {
+    public ResponseEntity<?> getOrderById(@PathVariable Long id) {
         try {
             System.out.println("id " + id);
             OrderDTO orderDTO = orderClient.getOrderById(id);
             return ResponseEntity.ok(orderDTO);
         } catch (FeignException.NotFound ex) {
             System.out.println("id not found" + id);
-            return ResponseEntity.notFound().build();
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Не найден заказ " + id);
+            error.put("message: ", String.valueOf(id));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+//            return ResponseEntity.notFound().build();
         } catch (FeignException ex) {
             throw new RuntimeException("Error calling ORDER service getOrderById: " + ex.getMessage());
         }
