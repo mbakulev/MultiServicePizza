@@ -14,15 +14,15 @@ public interface OrderClient {
     @GetMapping
     List<OrderDTO> getAllOrders();
 
-    @GetMapping("/{id}")
+    @GetMapping("/api/order/{id}")
     OrderDTO getOrderById(@PathVariable Long id);
 
-    @PostMapping
+    @PostMapping("/api/order")
     OrderDTO createOrder(@RequestBody OrderDTO dto);
 
-    @PutMapping("/{id}")
+    @PutMapping("/api/order/{id}")
     OrderDTO updateOrder(@PathVariable Long id, @RequestBody OrderDTO dto);
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/api/order/{id}")
     Void deleteOrder(@PathVariable Long id);
 }

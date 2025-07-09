@@ -44,6 +44,7 @@ public class OrderService {
 
     @Transactional
     public OrderDTO createOrder(OrderDTO orderDTO) {
+        System.out.println(orderDTO);
         Optional<OrderStatusEntity> statusOpt = orderStatusRepository.findByName("NEW");
 
         OrderEntity order = OrderMapper.toEntity(orderDTO, statusOpt.get());
