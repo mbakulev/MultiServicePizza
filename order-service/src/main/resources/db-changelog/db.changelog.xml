@@ -10,6 +10,11 @@ http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
         <rollback/>
     </changeSet>
 
+    <changeSet id="insert_orders_statuses_table" author="MBakulev">
+        <sqlFile encoding="utf8" path="/db-changelog/changelog-05.sql"/>
+        <rollback/>
+    </changeSet>
+
 
 
 </databaseChangeLog>

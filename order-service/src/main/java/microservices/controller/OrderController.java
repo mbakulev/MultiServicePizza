@@ -5,12 +5,42 @@ package microservices.controller;
 //import feign.FeignException;
 //import model.Order;
 //import org.springframework.http.ResponseEntity;
+import microservices.service.OrderService;
+import model.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 @RestController
-@RequestMapping("/orders")
+@RequestMapping("/api/order")
 public class OrderController {
+
+    @Autowired
+    private OrderService orderService;
+
+    @GetMapping("/{id}")
+    public OrderDTO getOrder(@PathVariable Long id) {
+        return orderService.getOrderById(id);
+    }
+
+    @PostMapping
+    public ResponseEntity<?> createOrder(@RequestBody OrderDTO orderDTO) {
+
+        try {
+            OrderDTO createdOrder = orderService.createOrder(orderDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdOrder);
+        } catch (Exception ex) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Проблема с созданием заказаl " + orderDTO);
+            error.put("message: ", String.valueOf(orderDTO));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+        }
+    }
 
 //    private final ProductClient productClient;
 //

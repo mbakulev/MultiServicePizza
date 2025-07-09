@@ -69,19 +69,22 @@ public static OrderDTO toDTO(OrderEntity orderEntity) {
 
     // DTO to Entity
     public static OrderEntity toEntity(OrderDTO orderDTO, OrderStatusEntity orderStatusEntity) {
+        System.out.println(11111);
         if (orderDTO == null) {
             return null;
         }
 
+        System.out.println(22);
         OrderEntity orderEntity = new OrderEntity();
 //         orderEntity.setId(orderDTO.getId());
 //         Assuming you have a method to retrieve the customer by ID
+        System.out.println(33);
         orderEntity.setCustomerId(orderDTO.getCustomerId());
         // Assuming you have a method to retrieve status by ID
         orderEntity.setStatus(orderStatusEntity);
 //        orderEntity.setCreatedAt(orderDTO.getCreatedAt());
         orderEntity.setTotalOrderAmount(orderDTO.getTotalOrderAmount());
-
+        System.out.println(44);
 //        List<OrderItemEntity> orderItemEntities = orderDTO.getItems().stream()
 //                .map(orderItemDTO -> toEntity(orderDTO.getId(), orderItemDTO))
 //                .collect(Collectors.toList());
