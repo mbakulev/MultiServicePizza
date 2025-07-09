@@ -42,7 +42,7 @@ public class OrderService {
         }
     }
 
-//    @Transactional
+    @Transactional
     public OrderDTO createOrder(OrderDTO orderDTO) {
         Optional<OrderStatusEntity> statusOpt = orderStatusRepository.findByName("NEW");
 
